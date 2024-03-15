@@ -1,0 +1,713 @@
+
+
+function loadconstants()
+
+ -- decomp px9 from pancelor cspr
+ -- move compressed data to lua
+ local size,packed=0x1000,{}
+ for i=1,2 do
+  local base=size*(i-1)
+  packed[i]=pack(peek4(base,size\4))
+ end
+
+ -- unpack upper data
+ for i=0,1 do
+  memset(spread"0,0,0x3000") --clear working memory
+  local src=0x4300
+  poke4(src,unpack(packed[i+1]))
+  -- unpack packed data into spritesheet
+  px9_decomp(0,0,src,sget,sset)
+
+  memcpy(0x8000+i*0x2000,0,0x2000)
+ end
+ reload()
+
+ -- palettes
+ gamepal,skypal,dark
+ =
+ split"133,2,137,4,5,6,7,8,9,3,142,130,134,140,143",
+ split"131:129:1:1:140:140:12:131,134:4:4:4:137:137:134,1:0:129:129:129:129:1,131:129:129:129:131,130:130:130:2:2:136:136:136:8,11:7:135:138:0:129:1:1:11:3:8:136:1:3:11:3,",split"12,12,4,2,1,13,6,12,3,5,4,0,5,10,11"
+
+ for k,i in pairs(skypal) do
+  skypal[k]=split(i,":")
+ end
+
+ -- constants
+ grav=0.12
+
+ -- standard
+ gt=0
+ mode="game"
+ cam_x=0
+ cam_xt=0
+ stage=1
+ fadet=0
+
+end
+
+--[[
+function _init()
+ poke(0x5f5c,-1)
+
+ -- decomp px9, from pancelor's cspr
+ -- move compressed data
+ --  into lua ram
+ local size,packed=0x1000,{}
+ for i=1,2 do
+  local base=size*(i-1)
+  packed[i]=pack(peek4(base,size\4))
+ end
+
+ -- unpack upper data
+ -- this takes some time
+ for i=1,2 do
+  memset(spread"0,0,0x3000") --clear working memory
+  local src=0x4300
+  poke4(src,unpack(packed[i]))
+  -- unpack packed data into spritesheet
+  px9_decomp(0,0,src,sget,sset)
+
+  memcpy(0x8000+(i-1)*0x2000,0,0x2000)
+ end
+ reload()
+
+gamepal,skypal,dark,
+actor,actor_groups,particle,stages,floor,floor2,bg,bg2,hud_data,wob,characters,
+t,fadet,cam_x,cam_x2,cam_lock,screen,grav,sky,cam_lockx,got,lowerfloor,upperfloor,stagename,chara,maxplayers,plrs,i,src,mode,player_stunskip,max_queue,freezeframe,stage
+=
+split"133,2,137,4,5,6,7,8,9,3,142,130,134,140,143",split"129:129:1:1:140:140:12:131,132:132:4:4:137:137:134,0:0:129:129:129:129:1,136:7:135:129:131:131:131:131:131:131:131:136,130:130:130:2:2:136:136:136:8,11:7:135:138:0:129:1:1:11:3:8:136:1:3:11:3,",split"12,12,4,2,1,13,6,12,3,5,4,0,5,10,11",
+{},{},{},{},{},{},{},{},{},{},
+
+split"nara,sine,guyzom,galzom", -- split"nara,sine",
+
+spread"0,0,64,64,0,1,0.15,1,0,0,0,-24,stage,0,2,0,0,0xb800,splash,10,3,0,1"
+
+ -- load wobblepaints
+ while (%src>0) do
+	i+=1
+	wob[i]=wob_load(src)
+	src+=%src
+ end
+
+ menuitem(5,"toggle debug",function() debug=not debug end)
+
+ init_data()
+ init_stages()
+ 
+ for k,i in pairs(skypal) do
+  skypal[k]=split(i,":")
+ end
+
+ -- pxlshk
+ tospr(spread"000dddddddddddddddddddddddd00000000d7777d7777d77d7d7777d77d00000000d77d7dd77dd77d7d77ddd77d00000000d7777dd77ddd77dd777dd77d00000000566555566556656566555665550000005665056666566565666656666500000055550555555555555555555555000000000000000000000000000000000000000777677767776666d666d666d00000000766d766d766d6dd56dd56dd500000000766d766d766d6dd56dd56dd5000000006ddd6ddd6dddd555d555d5550000000077767776666d666d666dddd500000000766d766d6dd56dd56dd5d55100000000766d766d6dd56dd56dd5d551000000006ddd6dddd555d555d5555111000000007776666d666d666dddd5ddd500000000766d6dd56dd56dd5d551d55100000000766d6dd56dd56dd5d551d551000000006dddd555d555d5555111511100000000666d666d666dddd5ddd50000000000006dd56dd56dd5d551d5510510000000006dd56dd56dd5d551d551011000000000d555d555d55551115111000000000000666d666dddd5ddd500000000000000006dd56dd5d551d55105100000000000006dd56dd5d551d5510110000000000000d555d555511151110000000000000000666dddd5ddd5000000000000000000006dd5d551d551051000000000000000006dd5d551d55101100000000000000000d55551115111000000000000000000000000000000000000000000000000000dddddddddddddddddddddddddd000000d7777d77d7d7777d7777d77d7d000000d77ddd77d7d77d7d77ddd77d7d000000d7777d7777d77d7d77d0d777dd000000555665665656656566555665650000005666656656566665666656656500000055555555555555555555555555000,32,0,0")
+
+
+
+ -- skip to game
+ add_actor(spread"fighter,sine,32,24,0")
+ init_stage(stage,true)
+ mode="game"
+
+end
+]]
+
+function init_stage(id,skipfade)
+
+ if(not stages[id])cls()flip()stop("no more stages, sorry!",7)
+
+ local data,title,i=split(stages[id].d,",",false),split(stages[id].t or ""),0
+
+ if(title)stagename=title[1]
+ if(not skipfade)fade(stagename,title[2])
+
+ -- reset values
+ got,cam_x
+ =spread"0,64"
+ for _ENV in all(actors) do
+  if ai then
+   del(actors,_ENV)
+  else
+   x=80+8*i
+   y=20+5*players-10*i
+   i+=1
+   engaged={}
+  end
+ end
+
+ -- cache group locations
+ actor_groups={}
+ for i in all(stages[id]) do
+  add(actor_groups,i.p)
+  i.p=nil
+ end
+
+ sky,floor,bg,bg2=tonum(data[1]),charsplit(data[2]),charsplit(data[3]),charsplit(data[4])
+
+end
+
+-- key table constructor
+function make_hitbox(x,y,w,h)
+ return {x=x,y=y,w=w,h=h}
+end
+
+-- sort table by y value
+function sorty(table)
+ local list,sorted={},{}
+
+ -- copy table
+ for i in all(table) do
+  add(list,i)
+ end
+
+ -- sort
+ repeat
+  min_y,delete=3200
+
+  -- find highest
+  for i in all(list) do
+   -- set order
+   if(i.y<min_y)min_y,delete=i.y,i
+  end
+
+  -- move to sorted
+  add(sorted,del(list,delete))
+ until #list==0
+
+ return sorted
+end
+
+-- darken palette
+function dpal(t)
+t=tonum(t or 1)
+for i=0,15 do
+col=i
+for c=1,t do
+if(t>0)col=dark[col]
+end
+pal(i,col)
+end
+end
+
+function tospr(str,w,x,y)
+for i,p in pairs(hexplit(str)) do
+i-=1
+sset(x+i%w,y+i\w,p)
+end
+end
+
+function fade(text,text2)
+dpal"0"
+
+for i=0,1.5,_update60 and 0.02 or 0.04 do
+for y=0,127 do
+ line(-1,y,fancyfade(i,y),y,0)
+end
+
+flip()
+end
+
+if text then
+fade_text,fade_text2=text,text2
+cls()
+print("\^d2"..text,66-#text*2,text2 and 56 or 62,7)
+
+if text2 then
+ ?"\^da "
+ print('\^d2"'..text2..'"',62-#text2*2,64,7)
+end
+
+?"\^dd   "
+end
+
+fadet=1
+pmode=nil
+
+end
+
+function fancyfade(i,y)
+ return 128*(i+i*abs(sin(i*(y-64)/50+y/128)))
+end
+
+function splode(id,x,y,z,size,spread)
+ spread=spread or 4
+ for i=1,size or 5 do
+  add(particles,create_particle(id,x+rnd(spread*2)-spread,y+rnd(spread*2)-spread,(-z or 0)-(rnd(spread))))
+ end
+end
+
+function create_particle(id,x,y,z)
+ return setmetatable({id=id,x=x,y=y,z=z,xv=rnd(6)-3,yv=rnd(4)-2,zv=-(0.5+rnd(3)),l=140+rnd(200)},{__index=_ENV})
+end
+
+function bprint(t,x,y,c,b)
+ for i=-3,5 do
+  ?t,x+i%3-1,y+i\3,b or 1
+ end
+ ?t,x,y,c or 7
+end
+
+function loop(a,l)
+if(a<1)a=l
+if(a>l)a=1
+return a
+end
+
+function spread(...)
+return unpack(split(...))
+end
+
+-- semi-sfx
+function ssfx(i,i2,l)
+l=l or 4
+sfx(i,-1,flr(i2)*l,l)
+end
+
+function hexplit(data)
+local tbl={}
+for i in all(split(data,1)) do
+add(tbl,tonum("0x"..i))
+end
+return tbl
+end
+
+function charsplit(data)
+local tbl={}
+for i in all(split(data,1)) do
+add(tbl,ord(i)-64)
+end
+return tbl
+end
+
+--[[ the epic multispr function
+--uses sspr when ang==0,
+--otherwise uses rspr
+function multispr(str,x,y,flip,scale)
+ scale,str=scale or 1,split(str,"|")
+
+ for sp in all(str) do
+
+  local i,w,h,sx,sy,r,s=spread(sp,":")
+  r,s=r or 0,s or 1
+  local sc,tx,ty=scale*s,sx*scale,sy*scale
+
+  -- flip
+  if(flip)tx,r=-tx,-r
+
+  -- draw
+  if r==0 then
+   local tw,th=w*8*sc,h*8*sc
+   sspr(i%16*8,i\16*8,w*8,h*8,flr(x+tx)-tw/2,flr(y+ty)-th/2,tw,th,flip)
+  else
+   --put into map
+   for ix=0,w+1 do
+    for iy=0,h+1 do
+     mset(ix,iy,(ix<w and iy<h) and (i+ix+iy*16) or 0)
+    end
+   end
+   rspr(flr(x+tx),flr(y+ty),r,0,0,w,h,flip,sc)
+  end
+
+ end
+
+end--]]
+
+-- the epic multispr function
+--uses sspr when ang==0,
+--otherwise uses rspr
+function multispr(str,x,y,flip,scale)
+ scale=scale or 1
+
+ for sp in all(split(str,7)) do
+ 
+  printh(sp)
+
+  local i,w,h,sx,sy,r,s=ord(sp,1,7)
+  r,s=(r or 0)*0.01,(s or 100)*0.01
+  sx-=128
+  sy-=128
+  local sc,tx,ty=scale*s,sx*scale,sy*scale
+
+  printh(i..":"..w..":"..h..":"..sx..":"..sy..":"..r..":"..s)
+
+  -- flip
+  if(flip)tx,r=-tx,-r
+
+  -- draw
+  if r==0 then
+   local tw,th=w*8*sc,h*8*sc
+   sspr(i%16*8,i\16*8,w*8,h*8,flr(x+tx)-tw/2,flr(y+ty)-th/2,tw,th,flip)
+  else
+   --put into map
+   for ix=0,w+1 do
+    for iy=0,h+1 do
+     mset(ix,iy,(ix<w and iy<h) and (i+ix+iy*16) or 0)
+    end
+   end
+   rspr(flr(x+tx),flr(y+ty),r,0,0,w,h,flip,sc)
+  end
+
+ end
+
+end
+
+-- borrowed functions
+
+function rspr(x,y,sw_rot,mx,my,w,h,flip,s)
+if(flip)sw_rot=-sw_rot
+local s,dx,dy,r,cs,ss=s or 1,0,0,max(w,h)/2,cos(sw_rot),-sin(sw_rot)
+if w>h then dy=(w-h)/2 else dx=(h-w)/2 end
+local ssx,ssy,cx,cy=mx-0.3-dx,my-0.3-dy,mx+r-dx,my+r-dy
+ssy-=cy
+ssx-=cx
+local delta_px,sx,sy=max(-ssx,-ssy)*8*s,cs*ssx+cx,-ss*ssx+cy
+local d_px=flip and -delta_px or delta_px
+for py=y-delta_px,y+delta_px do
+tline(x-d_px,py,x+d_px,py,sx+ss*ssy,sy+cs*ssy,cs/8/s,-ss/8/s)
+ssy+=0.125/s
+end
+end
+
+function str2table(str)
+local out,s={}
+add(out,{})
+for l in all(split(str,"\n")) do
+--db
+if l[1]~="#" then
+--dbe
+while ord(l)==9 or ord(l)==32 do
+l=sub(l,2)
+end
+if l~="" then
+s=split(l,"=")
+if(#s==1)s[1]=#out[#out]+1 s[2]=l
+if(s[2]=="{")s[2]={}
+if s[2]=="}" then
+deli(out)
+else
+out[#out][s[1]]=s[2]
+if(type(s[2])=="table")add(out,s[2])
+end
+end
+--db
+end
+--dbe
+end
+return out[1]
+end
+
+function px9_decomp(x0,y0,src,vget,vset)
+local function vlist_val(l, val)
+for i=1,#l do
+if l[i]==val then
+for j=i,2,-1 do
+l[j]=l[j-1]
+end
+l[1] = val
+return i
+end
+end
+end
+local cache,cache_bits=0,0
+function getval(bits)
+if cache_bits<16 then
+cache+=%src>>>16-cache_bits
+cache_bits+=16
+src+=2
+end
+local val=cache<<32-bits>>>16-bits
+cache=cache>>>bits
+cache_bits-=bits
+return val
+end
+function gnp(n)
+local bits=0
+repeat
+bits+=1
+local vv=getval(bits)
+n+=vv
+until vv<(1<<bits)-1
+return n
+end
+local
+w,h_1,
+eb,el,pr,
+x,y,
+splen,
+predict
+=
+gnp"1",gnp"0",
+gnp"1",{},{},
+0,0,
+0
+for i=1,gnp"1" do
+add(el,getval(eb))
+end
+for y=y0,y0+h_1 do
+for x=x0,x0+w-1 do
+splen-=1
+if(splen<1) then
+splen,predict=gnp"1",not predict
+end
+local a=y>y0 and vget(x,y-1) or 0
+local l=pr[a]
+if not l then
+l={}
+for e in all(el) do
+add(l,e)
+end
+pr[a]=l
+end
+local v=l[predict and 1 or gnp"2"]
+vlist_val(l, v)
+vlist_val(el, v)
+vset(x,y,v)
+x+=1
+y+=x\w
+x%=w
+end
+end
+end
+
+--db
+function wob_draw(scn,sx,sy,q)
+
+ sx=sx or 0
+ sy=sy or 0
+ q=q or flr(time()*6)
+ 
+ local funcs={[0]=
+  circfill,circ,
+  function(x,y,r,c)
+   line(x-r,y,x+r,y,c) end,
+	 function(x,y,r,c)
+	  line(x,y-r,x,y+r,c) end,
+  function(x,y,r,c)
+   rectfill(x-r,y-r,x+r,y+r,c)
+   end,
+  function(x,y,r,c) -- star
+		 a=nrnd(1)
+		 for j=0,4 do
+		  line(x,y,x+cos(a+j/5)*r,
+		       y+sin(a+j/5)*r, c)
+		 end
+		end,
+	 function(x,y,r,c,i) -- spin
+		 local dx=cos(i*0x0.08)*r
+		 local dy=sin(i*0x0.08)*r
+		 line(x-dx,y-dy,x+dx,y+dy,c)
+		end
+ }
+ 
+ local rv
+ function nrnd(m)
+  rv=rotl(rv,3)
+  rv*=0x2518.493b -- mashed
+  return (rv%m)
+ end
+
+ -- seed wobble by time
+ srand(q)
+ 
+ local xx=rnd(1)-.5
+ local yy=rnd(1)-.5
+ 
+ for j=1,#wob[scn] do
+  local crv=wob[scn][j]
+  
+  local r,col,x0,y0=
+  	crv.size,crv.col,
+	  sx+crv[2] + xx,
+	  sy+crv[3] + yy
+	
+  local x1,y1=x0,y0
+  
+  local shape,dotted,noise,pat=
+	  crv.shape,
+	  crv.dotted/3,
+	  crv.noise/3,
+	  crv.pat
+	 
+  if(dotted>0)dotted=max(1,flr(dotted*(1+r)/2))
+  
+  -- set pattern
+  if((col/0x11)%1==0)pat+=0.5  
+  fillp(pat)
+  
+  local sfunc=funcs[shape]
+  
+  -- random generator for noise
+  -- seeded by curve number j
+  rv=0x37f9.2407*j
+  
+  for i=2,#crv-1,2 do
+   
+   x0=x1 y0=y1
+   x1=sx+crv[i]   +xx
+   y1=sy+crv[i+1] +yy
+   
+   -- jump to another rnd
+   -- offset closeby 
+   -- (prevents crinkles)
+   xx=xx*7/8+(rnd(1)-.5)/2
+   yy=yy*7/8+(rnd(1)-.5)/2
+   
+   if (dotted>0) then
+   
+    -- one every nth point
+    
+    if ((i-2)/2)%dotted==0 then
+     
+     if (noise==0) then
+      sfunc(x1,y1,r,col,i/2)
+     else
+     
+     local mag=(r+2)*noise*2
+     local smag=(r+1)*noise
+     local r0=r-r*noise
+     
+     sfunc(
+      x1 + nrnd(mag) - mag/2,
+      y1 + nrnd(mag) - mag/2,
+      r0 + nrnd(smag),
+      col,i/2)
+     end
+    end
+   elseif (shape==2) then
+    -- wide brush (lettering)
+    for i=flr(-r/2),flr(r+.5)/2 do
+		   line(x0+i,y0,x1+i,y1,col)
+		  end
+   elseif (shape==3) then
+    -- tall brush
+    for i=flr(-r/2),flr(r+.5)/2 do
+		   line(x0,y0+i,x1,y1+i,col)
+		  end
+   elseif (r<2) then
+		  -- common
+		  line(x0,y0,x1,y1,col)
+		  if (r==1) then 
+		  line(x0+1,y0,x1+1,y1,col)
+		  line(x0,y0+1,x1,y1+1,col)
+		  line(x0+1,y0+1,x1+1,y1+1,col)
+		  end
+		 else
+		  -- cheap hack:
+		  -- draw at control point
+		  -- and at midpoint.
+		  sfunc(x0,y0,r-1,col)
+		  sfunc((x0+x1)/2,(y0+y1)/2,
+		   r-1,col)
+		 end   
+  end
+ end
+ 
+ fillp()
+ 
+end
+
+
+-- decode
+
+function wob_load(src)
+
+ local src0=src
+ src-=1 
+ local bit,b=256,0
+ local scn={}
+ 
+ local function getval(bits)
+  
+  local val=0
+  for i=0,bits-1 do
+   --get next bit from stream
+   if (bit==256) then
+    bit=1
+    src+=1
+    byte=peek(src)
+   end
+   if band(byte,bit)>0 then
+    val+=2^i
+   end
+   bit*=2
+  end
+  return val
+ end
+ 
+ local dat_len = getval(16)
+ local lsize,lcol
+ 
+ -- back color
+ scn.back_col=14
+ 
+ -- read state
+ local col,size,shape,dotted,
+       noise,pat=
+       0,0,0,0,0,0
+ 
+ -- read until out of data
+ -- each item is >= 3 bytes
+ while (src<src0+dat_len-3) do
+ 
+  -- curve header (3 sections)
+  -- 1. 
+  local crv=add(scn,{0})
+  
+ -- {0} --dummy
+
+  if (getval(1)==1) then
+   col,size=getval(4),getval(5)
+  end
+  
+  if (getval(1)==1) then
+   shape,dotted,noise=
+   getval(3),getval(4),getval(3)
+  end
+
+  -- set state
+  crv.col,crv.size,crv.shape,
+  crv.dotted,crv.noise,crv.pat=
+  col,size,shape,dotted,noise,0
+  
+  -- use pattern
+  if (getval(1)>0) then
+   crv.pat=getval(16)
+   crv.col+=getval(4)*16
+  end
+  
+  -- 7 start x,y
+  add(crv,getval(7))
+  add(crv,getval(7))
+  local x0,y0,has_segs,a=
+   crv[2],crv[3],getval(1),0
+  
+  -- read segments
+  
+  while (has_segs>0) do
+   local v=0
+   
+   if (getval(1)<1) then
+    -- read non-zero da
+    local neg=getval(1)
+    v=1
+    while(getval(1)<1 and v<8)
+    do v+=1 end
+    if (neg>0) v*=-1
+   end
+   
+   if (v==8) then
+    -- end of segment
+    has_segs=0
+   else
+    -- add segment
+    a+=v
+    x0+=flr(.5+cos(a/16)*3)
+    y0+=flr(.5+sin(a/16)*3)
+    add(crv,x0)
+    add(crv,y0)
+   end
+  end
+ end
+
+ return scn
+end
+--dbe

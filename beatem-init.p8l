@@ -1,0 +1,411 @@
+
+function loadconstants()
+
+ -- custom font
+ -- default font snippet
+ --poke(0x5600,spread"6,8,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,63,63,63,63,63,63,0,0,0,63,63,63,0,0,0,0,0,63,51,63,0,0,0,0,0,51,12,51,0,0,0,0,0,51,0,51,0,0,0,0,0,51,51,51,0,0,0,0,48,60,63,60,48,0,0,0,3,15,63,15,3,0,0,62,6,6,6,6,0,0,0,0,0,48,48,48,48,62,0,99,54,28,62,8,62,8,0,0,0,0,24,0,0,0,0,0,0,0,0,0,12,24,0,0,0,0,0,0,12,12,0,0,0,10,10,0,0,0,0,0,4,10,4,0,0,0,0,0,0,0,0,0,0,0,0,12,12,12,12,12,0,12,0,0,54,54,0,0,0,0,0,0,54,127,54,54,127,54,0,8,62,11,62,104,62,8,0,0,51,24,12,6,51,0,0,14,27,27,110,59,59,110,0,12,12,0,0,0,0,0,0,12,6,6,6,12,0,0,0,6,12,12,12,6,0,0,0,0,54,28,127,28,54,0,0,0,4,14,4,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,62,0,0,0,0,0,0,0,0,1,0,0,0,16,8,4,2,1,0,0,0,14,19,19,19,14,0,0,0,12,14,12,12,30,0,0,0,14,25,12,6,31,0,0,0,14,25,28,25,14,0,0,0,25,25,31,24,24,0,0,0,31,3,15,24,15,0,0,0,30,3,15,19,14,0,0,0,31,24,12,12,12,0,0,0,14,19,14,19,14,0,0,0,14,25,31,24,15,0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,1,0,0,0,48,24,12,6,12,24,48,0,0,0,30,0,30,0,0,0,6,12,24,48,24,12,6,0,30,51,48,24,12,0,12,0,0,30,51,59,59,3,30,0,0,0,62,96,126,99,126,0,3,3,63,99,99,99,63,0,0,0,62,99,3,99,62,0,96,96,126,99,99,99,126,0,0,0,62,99,127,3,62,0,124,6,6,63,6,6,6,0,0,0,126,99,99,126,96,62,3,3,63,99,99,99,99,0,0,24,0,28,24,24,60,0,48,0,56,48,48,48,51,30,3,3,51,27,15,27,51,0,12,12,12,12,12,12,56,0,0,0,99,119,127,107,99,0,0,0,63,99,99,99,99,0,0,0,62,99,99,99,62,0,0,0,63,99,99,63,3,3,0,0,126,99,99,126,96,96,0,0,62,99,3,3,3,0,0,0,62,3,62,96,62,0,12,12,62,12,12,12,56,0,0,0,99,99,99,99,126,0,0,0,99,99,34,54,28,0,0,0,99,99,107,127,54,0,0,0,99,54,28,54,99,0,0,0,99,99,99,126,96,62,0,0,127,112,28,7,127,0,62,6,6,6,6,6,62,0,1,3,6,12,24,48,32,0,62,48,48,48,48,48,62,0,12,30,18,0,0,0,0,0,0,0,0,0,0,0,30,0,12,24,0,0,0,0,0,0,14,19,31,19,19,0,0,0,15,19,15,19,31,0,0,0,30,3,3,3,31,0,0,0,15,19,19,19,31,0,0,0,31,3,15,3,31,0,0,0,31,3,15,3,3,0,0,0,30,3,27,19,31,0,0,0,19,19,31,19,19,0,0,0,15,6,6,6,15,0,0,0,31,12,12,13,14,0,0,0,19,11,7,15,27,0,0,0,3,3,3,3,31,0,0,0,27,31,21,17,17,0,0,0,19,23,27,19,19,0,0,0,14,19,19,19,31,0,0,0,15,19,19,31,3,0,0,0,14,19,19,27,31,0,0,0,15,19,19,15,27,0,0,0,30,3,31,24,31,0,0,0,15,6,6,6,6,0,0,0,19,19,19,19,31,0,0,0,19,19,19,27,14,0,0,0,19,19,23,23,31,0,0,0,19,19,14,19,19,0,0,0,19,19,30,16,31,0,0,0,31,24,14,3,31,0,0,0,56,12,12,7,12,12,56,0,8,8,8,0,8,8,8,0,14,24,24,112,24,24,14,0,0,0,110,59,0,0,0,0,0,0,0,0,0,0,0,0,127,127,127,127,127,127,127,0,85,42,85,42,85,42,85,0,65,99,127,93,93,119,62,0,62,99,99,119,62,0,0,0,17,68,17,68,17,68,17,0,4,12,124,62,31,24,16,0,28,38,95,95,127,62,28,0,34,119,127,127,62,28,8,0,42,28,54,119,54,28,42,0,28,28,62,93,28,20,20,0,8,28,62,127,62,42,58,0,62,103,99,103,62,0,0,0,62,127,93,93,127,99,62,0,24,120,8,8,8,15,7,0,62,99,107,99,62,0,0,0,8,20,42,93,42,20,8,0,0,0,0,85,0,0,0,0,62,115,99,115,62,0,0,0,8,28,127,28,54,34,0,0,127,34,20,8,20,34,127,0,62,119,99,99,62,0,0,0,0,10,4,0,80,32,0,0,17,42,68,0,17,42,68,0,62,107,119,107,62,0,0,0,127,0,127,0,127,0,127,0,85,85,85,85,85,85,85,0")
+ --poke(0x5f58,0x81) -- always use font
+
+ -- decomp px9 from pancelor cspr
+ -- move compressed d to lua
+ local size,p=0x1000,{}
+ for i=1,2 do
+  local base=size*(i-1)
+  p[i]=pack(peek4(base,size\4))
+ end
+
+ -- unpack upper d
+ for i=0,1 do
+  memset(spread"0,0,0x3000") --clear working memory
+  local src=0x4300
+  poke4(src,unpack(p[i+1]))
+  -- unpack packed d into spritesheet
+  px9_decomp(0,0,src,sget,sset)
+
+  memcpy(0x8000+i*0x2000,0,0x2000)
+ end
+ reload()
+
+ -- palettes
+ gamepal,skypal,dark
+ =
+ split"133,2,137,4,5,6,7,8,9,3,142,130,134,140,143",
+ split"131:129:1:1:140:140:12:131,134:4:4:4:137:137:134,1:0:129:129:129:129:1,131:129:129:129:131,130:130:130:2:2:136:136:136:8,11:7:135:138:0:129:1:1:11:3:8:136:1:3:11:3,",split"12,12,4,2,1,13,6,2,3,5,4,0,5,10,11"
+
+ for k,i in pairs(skypal) do
+  skypal[k]=split(i,":")
+ end
+
+ -- constants
+ grav=0.12
+
+ -- standard
+ gt=0
+ mode="game"
+ cam_x=0
+ cam_xt=0
+ stg=1
+ fadet=1
+
+end
+
+function initstg(id--db
+,skipfade--dbe
+)
+
+ local i=0
+
+ -- load cutscene cart
+ if not stgs[id] then
+  -- increment current area
+  dset(63,dget(63)+1)
+
+  -- save health
+  for _ENV in all(obj) do
+   if not ai then
+    i+=1
+    dset(i,hp)
+   end
+  end
+
+  fade()
+  load("beatem-cutscenes.p8",nil,stat(6))
+
+  --db fallback
+  stop"hey the cart didn't load wot you stupid"
+  --dbe
+
+ end
+
+ local d=split(stgs[id].d,",",false)
+ --local title=split(stgs[id].t or "")
+
+ --if(title)stgname=title[1]
+ --db
+ if(not skipfade)fade() -- (stgname,title[2])
+ --dbe
+
+ -- reset values
+ got,cam_x
+ =spread"0,64"
+ for _ENV in all(obj) do
+  if ai then
+   del(obj,_ENV)
+  else
+   x=80+8*i
+   y=20+5*players-10*i
+   xv,yv=0,0
+   i+=1
+   engaged={}
+  end
+ end
+
+ -- cache group locations
+ actor_groups={}
+ for i in all(stgs[id]) do
+  add(actor_groups,i.p)
+  i.p=nil
+ end
+
+ sky,floor,bg,bg2=tonum(d[1]),charsplit(d[2]),charsplit(d[3]),charsplit(d[4])
+
+end
+
+-- key table constructor
+function newhbox(x,y,w,h)
+ return {x=x,y=y,w=w,h=h}
+end
+
+-- sort table by y value
+function sorty(table)
+ local list,sorted={},{}
+
+ -- copy table
+ for i in all(table) do
+  add(list,i)
+ end
+
+ -- sort
+ repeat
+  min_y,delete=3200
+
+  -- find highest
+  for i in all(list) do
+   -- set order
+   if(i.y<min_y)min_y,delete=i.y,i
+  end
+
+  -- move to sorted
+  add(sorted,del(list,delete))
+ until #list==0
+
+ return sorted
+end
+
+-- darken palette
+function dpal(t)
+t=tonum(t or 1)
+for i=0,15 do
+col=i
+for c=1,t do
+if(t>0)col=dark[col]
+end
+pal(i,col)
+end
+end
+
+function tospr(str,w,x,y)
+for i,p in pairs(hexplit(str)) do
+i-=1
+sset(x+i%w,y+i\w,p)
+end
+end
+
+function fade(--[[text,text2]])
+ dpal"0"
+
+ for i=0,1.5,_update60 and 0.02 or 0.04 do
+  for y=0,127 do
+   line(-1,y,128*(i+i*abs(sin(i*(y-64)/50+y/128))),y,0)
+  end
+
+  flip()
+ end
+--[[
+ if text then
+  fade_text,fade_text2=text,text2
+  cls()
+  print("\^d2"..text,66-#text*2,text2 and 56 or 62,7)
+
+  if text2 then
+   ?"\^da "
+   print('\^d2"'..text2..'"',62-#text2*2,64,7)
+  end
+
+  ?"\^dd   "
+ end
+]]
+ fadet=1
+ pmode=nil
+end
+
+function unfade()
+ if fadet>0 then
+  for y=0,127 do
+   local i=fadet
+   line(128-128*(i+i*abs(sin(i*(y-64)/50+y/128))),y,128,y,0)
+  end
+--[[
+  if fade_text then
+   print(fade_text,66-#fade_text*2,(fade_text2 and 64 or 70)*(1/fadet)-8,7)
+   if fade_text2 then
+    print('"'..fade_text2..'"',62-#fade_text2*2,72*(1/fadet)-8,7)
+   end
+  end
+ else
+  fade_text,fade_text2=false
+]]
+ end
+
+ fadet=max(fadet-.04)
+end
+
+function splode(id,x,y,z,size,spread)
+ spread=spread or 4
+ for i=1,size or 5 do
+  add(dust,create_particle(id,x+rnd(spread*2)-spread,y+rnd(spread*2)-spread,(-z or 0)-(rnd(spread))))
+ end
+end
+
+function create_particle(id,x,y,z)
+ return setmetatable({id=id,x=x,y=y,z=z,xv=rnd(6)-3,yv=rnd(4)-2,zv=-(0.5+rnd(3)),l=140+rnd(200)},{__index=_ENV})
+end
+
+function bprint(t,x,y,c,b)
+ for i=-3,5 do
+  ?t,x+i%3-1,y+i\3,b or 1
+ end
+ ?t,x,y,c or 7
+end
+
+function loop(a,l)
+if(a<1)a=l
+if(a>l)a=1
+return a
+end
+
+function spread(...)
+return unpack(split(...))
+end
+
+-- semi-sfx
+function ssfx(i,i2,l)
+l=l or 4
+sfx(i,-1,flr(i2)*l,l)
+end
+
+function hexplit(d)
+local tbl={}
+for i in all(split(d,1)) do
+add(tbl,tonum("0x"..i))
+end
+return tbl
+end
+
+function charsplit(d)
+local tbl={}
+for i in all(split(d,1)) do
+add(tbl,ord(i)-64)
+end
+return tbl
+end
+
+-- the epic multispr function
+--uses sspr when ang==0,
+--otherwise uses rspr
+function multispr(str,x,y,flip,scale)
+ scale,str=scale or 1,split(str,"|")
+
+ for sp in all(str) do
+
+  local i,w,h,sx,sy,r,s=spread(sp,":")
+  r,s=r or 0,s or 1
+  if(flip)sx,r=-sx,-r
+  local sc,tx,ty=scale*s,flr(x+sx*scale),flr(y+sy*scale)
+
+  -- draw
+  if r==0 then
+   local tw,th=ceil(w*8*sc),ceil(h*8*sc)
+   sspr(i%16*8,i\16*8,w*8,h*8,tx-tw*.5,ty-th*.5,tw,th,flip)
+  else
+   --put into map
+   for ix=0,w+1 do
+    for iy=0,h+1 do
+     mset(ix,iy,(ix<w and iy<h) and (i+ix+iy*16) or 0)
+    end
+   end
+   rspr(tx,ty,r,0,0,w,h,flip,sc)
+  end
+
+ end
+
+end
+
+
+-- borrowed functions
+
+function rspr(x,y,sw_rot,mx,my,w,h,flip,s)
+if(flip)sw_rot=-sw_rot
+local s,dx,dy,r,cs,ss=s or 1,0,0,max(w,h)/2,cos(sw_rot),-sin(sw_rot)
+if w>h then dy=(w-h)/2 else dx=(h-w)/2 end
+local ssx,ssy,cx,cy=mx-0.3-dx,my-0.3-dy,mx+r-dx,my+r-dy
+ssy-=cy
+ssx-=cx
+local delta_px,sx,sy=max(-ssx,-ssy)*8*s,cs*ssx+cx,-ss*ssx+cy
+local d_px=flip and -delta_px or delta_px
+for py=y-delta_px,y+delta_px do
+tline(x-d_px,py,x+d_px,py,sx+ss*ssy,sy+cs*ssy,cs/8/s,-ss/8/s)
+ssy+=0.125/s
+end
+end
+
+function str2table(str)
+local out,s={}
+add(out,{})
+for l in all(split(str,"\n")) do
+--db
+if l[1]~="#" then
+--dbe
+while ord(l)==9 or ord(l)==32 do
+l=sub(l,2)
+end
+if l~="" then
+s=split(l,"=")
+if(#s==1)s[1]=#out[#out]+1 s[2]=l
+if(s[2]=="{")s[2]={}
+if s[2]=="}" then
+deli(out)
+else
+out[#out][s[1] ]=s[2]
+if(type(s[2])=="table")add(out,s[2])
+end
+end
+--db
+end
+--dbe
+end
+return out[1]
+end
+
+function px9_decomp(x0,y0,src,vget,vset)
+local function vlist_val(l, val)
+for i=1,#l do
+if l[i]==val then
+for j=i,2,-1 do
+l[j]=l[j-1]
+end
+l[1] = val
+return i
+end
+end
+end
+local cache,cache_bits=0,0
+function getval(bits)
+if cache_bits<16 then
+cache+=%src>>>16-cache_bits
+cache_bits+=16
+src+=2
+end
+local val=cache<<32-bits>>>16-bits
+cache=cache>>>bits
+cache_bits-=bits
+return val
+end
+function gnp(n)
+local bits=0
+repeat
+bits+=1
+local vv=getval(bits)
+n+=vv
+until vv<(1<<bits)-1
+return n
+end
+local
+w,h_1,
+eb,el,pr,
+x,y,
+splen,
+predict
+=
+gnp"1",gnp"0",
+gnp"1",{},{},
+0,0,
+0
+for i=1,gnp"1" do
+add(el,getval(eb))
+end
+for y=y0,y0+h_1 do
+for x=x0,x0+w-1 do
+splen-=1
+if(splen<1) then
+splen,predict=gnp"1",not predict
+end
+local a=y>y0 and vget(x,y-1) or 0
+local l=pr[a]
+if not l then
+l={}
+for e in all(el) do
+add(l,e)
+end
+pr[a]=l
+end
+local v=l[predict and 1 or gnp"2"]
+vlist_val(l, v)
+vlist_val(el, v)
+vset(x,y,v)
+x+=1
+y+=x\w
+x%=w
+end
+end
+end
