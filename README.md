@@ -1,6 +1,14 @@
 # Scholarly Complications
 https://cubee.games/?rel=PICO-8&sub=scholarly_complications
+
 A PICO-8 beat-em-up game about a bored teenager, her incredibly cool and underappreciated music teacher, and the sudden occurrence of a zombie apocalypse.
+
+Utilises Shrinko-8 to optimise for the compressed size limit, zep's PX9 compression to store extra graphics, TheRoboZ's pd_rotate function (renamed rspr) for rotated sprites, and GPI's str2table function for storing actor and level data in strings.
+Shrinko-8	- https://www.lexaloffle.com/bbs/?tid=48591
+PX9			- https://www.lexaloffle.com/bbs/?tid=34058
+pd_rotate	- https://www.lexaloffle.com/bbs/?tid=38548
+str2table	- https://www.lexaloffle.com/bbs/?tid=34342 (scroll down a bit)
+
 
 ## Game data
 ```
